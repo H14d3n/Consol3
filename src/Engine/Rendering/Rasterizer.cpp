@@ -4,6 +4,12 @@
 
 #include <algorithm>
 
+#ifdef SYS_WINDOWS
+#include <malloc.h>
+#else
+#include <alloca.h>
+#endif
+
 namespace Engine
 {
     namespace Rendering
@@ -41,7 +47,11 @@ namespace Engine
 
         void Rasterizer::ClipAndRasterize(DepthBuffer& depthbuffer, const VertexBuffer& vertex_buffer, const RGBColor& color, IShader& shader)
         {
+#ifdef SYS_WINDOWS
             void* context = _alloca(shader.GetFragmentContextSize());
+#else
+            void* context = alloca(shader.GetFragmentContextSize());
+#endif
             for (uint32_t i = 0; i < vertex_buffer.GetIndices().size(); i += 3)
             {
                 Vertex v0 = vertex_buffer.GetVertex(i);
