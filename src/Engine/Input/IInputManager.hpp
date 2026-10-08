@@ -50,6 +50,9 @@ namespace Engine
             N0,
             PAGE_UP,
             PAGE_DOWN,
+
+            // not a key, the number of keys - must stay last
+            KEY_COUNT,
         };
 
         class IInputManager

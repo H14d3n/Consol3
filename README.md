@@ -30,7 +30,9 @@ executables should be generated inside the build folder:
 Consol3_raster will have a scene with only rasterized meshes, lights & other experiments  
 Consol3_voxel will have a scene with ray marched voxels, along with a particle-like simulation for sand, water, lava, steam and ice using the voxels  
 
-The project can be built for either Windows or Linux, on Linux no mouse input is supported yet (use the arrow keys to control the look direction), and only a few frame drawers are supported
+The project can be built for either Windows or Linux, on Linux only a few frame drawers are supported
+
+On Linux (including WSL and SSH) input is read from the terminal, the image always fills the terminal and follows it when resized. Holding keys works best in terminals that report key releases: Windows Terminal, kitty, WezTerm, foot, Ghostty, Alacritty or iTerm2. Other terminals only report key presses, so held keys are estimated from the key repeat, and Shift, Ctrl and Capslock are only seen together with another key. Mouse buttons and mouse look (Capslock) work in any terminal with mouse reporting. When run locally with read access to `/dev/input` (root or the `input` group), the keyboard is read directly instead
 
 
 ## Controls
