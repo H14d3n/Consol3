@@ -32,7 +32,7 @@ Consol3_voxel will have a scene with ray marched voxels, along with a particle-l
 
 The project can be built for either Windows or Linux, on Linux only a few frame drawers are supported
 
-On Linux (including WSL and SSH) input is read from the terminal, the image always fills the terminal and follows it when resized. Holding keys works best in terminals that report key releases: Windows Terminal, kitty, WezTerm, foot, Ghostty, Alacritty or iTerm2. Other terminals only report key presses, so held keys are estimated from the key repeat, and Shift, Ctrl and Capslock are only seen together with another key. Mouse buttons and mouse look (Capslock) work in any terminal with mouse reporting. When run locally with read access to `/dev/input` (root or the `input` group), the keyboard is read directly instead
+On Linux (including WSL and SSH) input is read from the terminal, the image always fills the terminal and follows it when resized. Unlike the Windows console, a terminal's font can't be shrunk to a few pixels, so by default every cell is split into 2 square pixels using the `▀` character (VT24BitHalfBlock frame drawer). For a sharper image make the terminal font smaller or zoom out (Ctrl and -), every cell is one more pixel, at the cost of FPS. Holding keys works best in terminals that report key releases: Windows Terminal, kitty, WezTerm, foot, Ghostty, Alacritty or iTerm2. Other terminals only report key presses, so held keys are estimated from the key repeat, and Shift, Ctrl and Capslock are only seen together with another key. Mouse buttons and mouse look (Capslock) work in any terminal with mouse reporting. When run locally with read access to `/dev/input` (root or the `input` group), the keyboard is read directly instead
 
 
 ## Controls

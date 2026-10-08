@@ -24,6 +24,7 @@
 #endif
 
 #include "Display/Multiplatform/TextOnlyFrameDrawer.hpp"
+#include "Display/Multiplatform/VT24BitHalfBlockFrameDrawer.hpp"
 #include "Display/Multiplatform/VT24BitFrameDrawer.hpp"
 #include "Display/Multiplatform/VT8BitFrameDrawer.hpp"
 
@@ -82,6 +83,9 @@ int main(int argc, char* argv[])
     // multiplatform frame drawers need to be given a terminal manager
     std::shared_ptr<ITerminalManager<char>> linux_terminal_manager = std::make_shared<Linux::LinuxTerminalManager>();
 
+    // a terminal can't use a tiny font like the windows console does, splitting every cell in 2 pixels is the next best thing, so this is the default
+    std::shared_ptr<FrameBuffer<uint32_t>> half_block_framebuffer = std::make_shared<FrameBuffer<uint32_t>>(width, height * 2);
+    frame_drawers.emplace_back(std::make_shared<Multiplatform::VT24BitHalfBlockFrameDrawer<char>>(half_block_framebuffer, linux_terminal_manager));
     frame_drawers.emplace_back(std::make_shared<Multiplatform::VT24BitFrameDrawer<char>>(uint32_t_framebuffer, linux_terminal_manager));
     frame_drawers.emplace_back(std::make_shared<Multiplatform::VT8BitFrameDrawer<char>>(uint8_t_framebuffer, linux_terminal_manager));
     frame_drawers.emplace_back(std::make_shared<Multiplatform::TextOnlyFrameDrawer<char>>(char_framebuffer, linux_terminal_manager));
