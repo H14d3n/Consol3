@@ -19,8 +19,7 @@ namespace Display
         {
             this->framebuffer->FillBuffer(0x000000);
 
-            framebuffer_string     = std::string(this->framebuffer->GetWidth() * this->framebuffer->GetHeight() * 20, ' ');
-            framebuffer_string_len = 0;
+            AllocateFrameBufferString();
         }
 
         template<>
@@ -30,7 +29,17 @@ namespace Display
         {
             this->framebuffer->FillBuffer(0x000000);
 
-            framebuffer_string     = std::string(this->framebuffer->GetWidth() * this->framebuffer->GetHeight() * 20, ' ');
+            AllocateFrameBufferString();
+        }
+
+        template<typename T>
+        void VT24BitFrameDrawer<T>::AllocateFrameBufferString()
+        {
+            uint64_t width  = framebuffer->GetWidth();
+            uint64_t height = framebuffer->GetHeight();
+
+            // worst case: a color escape sequence before every pixel, plus a cursor position sequence at the start of every row
+            framebuffer_string     = std::string(width * height * (MAX_COLOR_SEQUENCE_LEN + 1) + height * MAX_ROW_SEQUENCE_LEN, ' ');
             framebuffer_string_len = 0;
         }
 
@@ -54,6 +63,11 @@ namespace Display
 
             for (uint16_t y = 0; y < framebuffer->GetHeight(); y++)
             {
+                // position every row explicitly instead of using newlines, so the output can't be broken by how the terminal wraps lines
+                std::string row_string = "\x1b[" + std::to_string(y + 1) + ";1H";
+                row_string.copy(framebuffer_string.data() + current_string_index, row_string.length(), 0);
+                current_string_index += row_string.length();
+
                 for (uint16_t x = 0; x < framebuffer->GetWidth(); x++)
                 {
                     uint32_t current_color = framebuffer->GetValue(x, y);
@@ -92,11 +106,7 @@ namespace Display
 
                     framebuffer_string.data()[current_string_index++] = ' ';
                 }
-
-                framebuffer_string.data()[current_string_index++] = '\n';
             }
-
-            framebuffer_string.data()[current_string_index++] = '\0';
 
             framebuffer_string_len = current_string_index;
         }
@@ -130,6 +140,28 @@ namespace Display
         const uint16_t VT24BitFrameDrawer<T>::GetFrameBufferHeight() const
         {
             return framebuffer->GetHeight();
+        }
+
+        template<typename T>
+        bool VT24BitFrameDrawer<T>::UpdateFrameBufferSize()
+        {
+            uint16_t width;
+            uint16_t height;
+
+            if (!terminal_manager->GetDrawableSize(width, height) || (width == framebuffer->GetWidth() && height == framebuffer->GetHeight()))
+                return false;
+
+            framebuffer->Resize(width, height);
+            ClearFrameBuffer();
+            AllocateFrameBufferString();
+
+            return true;
+        }
+
+        template<typename T>
+        float VT24BitFrameDrawer<T>::GetPixelAspectRatio() const
+        {
+            return terminal_manager->GetCellAspectRatio();
         }
     }
 

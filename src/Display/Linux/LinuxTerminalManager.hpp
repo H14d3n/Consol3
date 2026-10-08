@@ -12,13 +12,12 @@ namespace Display
     {
         class LinuxTerminalManager : public ITerminalManager<char>
         {
-        private:
-            short width;
-            short height;
-
         public:
-            LinuxTerminalManager(short width, short height);
+            LinuxTerminalManager();
             ~LinuxTerminalManager();
+
+            // the size of the terminal can't be forced (most terminals ignore resize requests), so the framebuffer follows whatever the terminal currently is
+            static bool QueryTerminalSize(uint16_t& width, uint16_t& height);
 
             virtual void SetupTerminalManager() override;
 
@@ -27,6 +26,9 @@ namespace Display
 
             virtual void DisableCursor() override;
             virtual void EnableCursor() override;
+
+            virtual bool GetDrawableSize(uint16_t& width, uint16_t& height) const override;
+            [[nodiscard]] virtual float GetCellAspectRatio() const override;
 
             virtual void WriteFrameBufferData(const char* data) override;
             virtual void WriteSizedString(const std::string& string, uint64_t size) override;

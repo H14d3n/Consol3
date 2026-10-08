@@ -73,7 +73,7 @@ namespace Game
 
             Vector3 old_pos     = camera->GetPosition();
             Quaternion old_look = camera->GetRotation();
-            camera              = std::make_shared<Camera>(this->frame_drawer->GetFrameBufferWidth(), this->frame_drawer->GetFrameBufferHeight(), 0.001f, 100.0f, 90.0f);
+            camera              = std::make_shared<Camera>(this->frame_drawer->GetFrameBufferWidth(), this->frame_drawer->GetFrameBufferHeight(), 0.001f, 100.0f, 90.0f, this->frame_drawer->GetPixelAspectRatio());
             camera->SetPosition(old_pos);
             camera->SetRotation(old_look);
 

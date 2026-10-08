@@ -30,6 +30,22 @@ namespace Display
 
         [[nodiscard]] virtual const uint16_t GetFrameBufferWidth() const  = 0;
         [[nodiscard]] virtual const uint16_t GetFrameBufferHeight() const = 0;
+
+        /**
+         * Matches the framebuffer to the current size of the display, returns true if the size changed
+         */
+        virtual bool UpdateFrameBufferSize()
+        {
+            return false;
+        }
+
+        /**
+         * Width / height of a single displayed pixel
+         */
+        [[nodiscard]] virtual float GetPixelAspectRatio() const
+        {
+            return 1.0f;
+        }
     };
 }
 

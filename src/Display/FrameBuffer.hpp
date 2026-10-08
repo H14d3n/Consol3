@@ -58,6 +58,13 @@ namespace Display
             return buffer.data();
         }
 
+        void Resize(uint16_t width, uint16_t height)
+        {
+            this->width  = width;
+            this->height = height;
+            buffer.assign(width * height, T());
+        }
+
         void FillBuffer(const T& value)
         {
             std::fill(buffer.begin(), buffer.end(), value);

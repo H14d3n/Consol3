@@ -124,6 +124,10 @@ namespace Engine
     inline void Consol3Engine::DrawFrame(int64_t delta)
     {
         // auto time = this->GetCurrentTime();
+        // the display may have been resized (window resized, font zoomed), give the game the chance to rebuild what depends on the framebuffer size
+        if (frame_drawers[cur_frame_drawer_index]->UpdateFrameBufferSize())
+            game->SetFrameDrawer(frame_drawers[cur_frame_drawer_index]);
+
         frame_drawers[cur_frame_drawer_index]->ClearFrameBuffer();
         game->Render(delta);
         frame_drawers[cur_frame_drawer_index]->DisplayFrame();

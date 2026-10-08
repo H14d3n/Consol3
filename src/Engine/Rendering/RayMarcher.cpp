@@ -20,7 +20,7 @@ namespace Engine
 
         Ray RayMarcher::SetupRayPerspective(uint16_t x, uint16_t y, const Vector3& origin) const
         {
-            float ndc_x = -1.0f + 2.0f * static_cast<float>(x) / static_cast<float>(frame_drawer->GetFrameBufferHeight() - 1);
+            float ndc_x = -1.0f + 2.0f * static_cast<float>(x) / static_cast<float>(frame_drawer->GetFrameBufferWidth() - 1);
             float ndc_y = 1.0f - 2.0f * static_cast<float>(y) / static_cast<float>(frame_drawer->GetFrameBufferHeight() - 1);
 
             Vector3 pixel_point = Vector3(ndc_x, ndc_y, 1.0f);
@@ -39,7 +39,7 @@ namespace Engine
 
         Ray RayMarcher::SetupRayOrtho(uint16_t x, uint16_t y) const
         {
-            float ndc_x = -1.0f + 2.0f * static_cast<float>(x) / static_cast<float>(frame_drawer->GetFrameBufferHeight() - 1);
+            float ndc_x = -1.0f + 2.0f * static_cast<float>(x) / static_cast<float>(frame_drawer->GetFrameBufferWidth() - 1);
             float ndc_y = 1.0f - 2.0f * static_cast<float>(y) / static_cast<float>(frame_drawer->GetFrameBufferHeight() - 1);
 
             Vector3 pixel_point      = Vector3(ndc_x, ndc_y, 1.0f);

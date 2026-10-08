@@ -24,6 +24,14 @@ namespace Display
             const std::string shades;
             const uint8_t shades_count;
 
+            // only used when the frame is written as a string (T = char)
+            std::string framebuffer_string;
+
+            // longest possible row position sequence: \x1b[65535;1H
+            static constexpr uint64_t MAX_ROW_SEQUENCE_LEN = 11;
+
+            void AllocateFrameBufferString();
+
         public:
             TextOnlyFrameDrawer(std::shared_ptr<FrameBuffer<T>> framebuffer, std::shared_ptr<ITerminalManager<T>> terminal_manager);
 
@@ -39,6 +47,9 @@ namespace Display
 
             [[nodiscard]] virtual const uint16_t GetFrameBufferWidth() const override;
             [[nodiscard]] virtual const uint16_t GetFrameBufferHeight() const override;
+
+            virtual bool UpdateFrameBufferSize() override;
+            [[nodiscard]] virtual float GetPixelAspectRatio() const override;
         };
     }
 

@@ -25,7 +25,7 @@ namespace Engine
         {
         }
 
-        Camera::Camera(uint16_t width, uint16_t height, float znear, float zfar, float fov) :
+        Camera::Camera(uint16_t width, uint16_t height, float znear, float zfar, float fov, float pixel_aspect) :
             width(width),
             height(height),
             znear(znear),
@@ -34,7 +34,7 @@ namespace Engine
             position(Vector3()),
             rotation(Quaternion()),
             transform(Transform()),
-            projection_mat(Matrix4().SetPerspectiveProjection(width, height, znear, zfar, fov)),
+            projection_mat(Matrix4().SetPerspectiveProjection(width, height, znear, zfar, fov, pixel_aspect)),
             depthbuffer(DepthBuffer(width, height))
         {
         }

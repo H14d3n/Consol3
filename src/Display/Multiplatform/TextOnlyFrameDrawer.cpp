@@ -2,6 +2,8 @@
 
 #include "Math/Util/MathUtil.hpp"
 
+#include <algorithm>
+
 #ifdef SYS_WINDOWS
 // Windows.h overrides std::min
 #define NOMINMAX
@@ -34,6 +36,18 @@ namespace Display
             shades_count((uint8_t)shades.length())
         {
             this->framebuffer->FillBuffer(' ');
+
+            AllocateFrameBufferString();
+        }
+
+        template<typename T>
+        void TextOnlyFrameDrawer<T>::AllocateFrameBufferString()
+        {
+            uint64_t width  = framebuffer->GetWidth();
+            uint64_t height = framebuffer->GetHeight();
+
+            // every pixel is a single char, plus a cursor position sequence at the start of every row
+            framebuffer_string = std::string(width * height + height * MAX_ROW_SEQUENCE_LEN, ' ');
         }
 
         template<typename T>
@@ -62,10 +76,31 @@ namespace Display
             framebuffer->SetValue(x, y, shades[index]);
         }
 
-        template<typename T>
-        void TextOnlyFrameDrawer<T>::DisplayFrame()
+        template<>
+        void TextOnlyFrameDrawer<CHAR_INFO>::DisplayFrame()
         {
             terminal_manager->WriteFrameBufferData(framebuffer->GetFrameBufferData());
+        }
+
+        template<>
+        void TextOnlyFrameDrawer<char>::DisplayFrame()
+        {
+            uint64_t current_string_index = 0;
+            uint16_t width                = framebuffer->GetWidth();
+            const char* data              = framebuffer->GetFrameBufferData();
+
+            for (uint16_t y = 0; y < framebuffer->GetHeight(); y++)
+            {
+                // position every row explicitly instead of relying on the terminal wrapping at exactly the framebuffer width
+                std::string row_string = "\x1b[" + std::to_string(y + 1) + ";1H";
+                row_string.copy(framebuffer_string.data() + current_string_index, row_string.length(), 0);
+                current_string_index += row_string.length();
+
+                std::copy(data + y * width, data + (y + 1) * width, framebuffer_string.data() + current_string_index);
+                current_string_index += width;
+            }
+
+            terminal_manager->WriteSizedString(framebuffer_string, current_string_index);
         }
 
         template<typename T>
@@ -96,6 +131,28 @@ namespace Display
         const uint16_t TextOnlyFrameDrawer<T>::GetFrameBufferHeight() const
         {
             return framebuffer->GetHeight();
+        }
+
+        template<typename T>
+        bool TextOnlyFrameDrawer<T>::UpdateFrameBufferSize()
+        {
+            uint16_t width;
+            uint16_t height;
+
+            if (!terminal_manager->GetDrawableSize(width, height) || (width == framebuffer->GetWidth() && height == framebuffer->GetHeight()))
+                return false;
+
+            framebuffer->Resize(width, height);
+            ClearFrameBuffer();
+            AllocateFrameBufferString();
+
+            return true;
+        }
+
+        template<typename T>
+        float TextOnlyFrameDrawer<T>::GetPixelAspectRatio() const
+        {
+            return terminal_manager->GetCellAspectRatio();
         }
     }
 }

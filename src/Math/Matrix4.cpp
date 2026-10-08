@@ -148,10 +148,10 @@ namespace Math
         return *this;
     }
 
-    Matrix4& Matrix4::SetPerspectiveProjection(uint16_t width, uint16_t height, float znear, float zfar, float fov)
+    Matrix4& Matrix4::SetPerspectiveProjection(uint16_t width, uint16_t height, float znear, float zfar, float fov, float pixel_aspect)
     {
-        // aspect ratio
-        float ar      = (float)width / (float)height;
+        // aspect ratio of the displayed image, pixel_aspect is the width/height of a single pixel (a terminal cell is ~0.5)
+        float ar      = ((float)width * pixel_aspect) / (float)height;
         float fov_rad = Util::ToRadians(fov);
         float tanhf   = std::tan(fov_rad / 2.0f);
         float zrange  = znear - zfar;

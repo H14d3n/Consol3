@@ -85,6 +85,12 @@ namespace Display
             const std::string esc_sequence_end   = "m";
             const uint8_t esc_sequence_len       = (uint8_t)esc_sequence_end.length();
 
+            // longest possible color sequence: \x1b[48;5;255m
+            static constexpr uint64_t MAX_COLOR_SEQUENCE_LEN = 11;
+            // longest possible row position sequence: \x1b[65535;1H
+            static constexpr uint64_t MAX_ROW_SEQUENCE_LEN = 11;
+
+            void AllocateFrameBufferString();
             void TranslateFrameBuffer();
 
         public:
@@ -102,6 +108,9 @@ namespace Display
 
             [[nodiscard]] virtual const uint16_t GetFrameBufferWidth() const override;
             [[nodiscard]] virtual const uint16_t GetFrameBufferHeight() const override;
+
+            virtual bool UpdateFrameBufferSize() override;
+            [[nodiscard]] virtual float GetPixelAspectRatio() const override;
         };
     }
 }

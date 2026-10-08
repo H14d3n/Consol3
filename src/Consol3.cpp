@@ -42,6 +42,11 @@ int main(int argc, char* argv[])
     uint16_t width  = 150;
     uint16_t height = 150;
 
+#ifdef SYS_LINUX
+    // render at whatever size the terminal currently is, the frame drawers follow it if it's resized later
+    Linux::LinuxTerminalManager::QueryTerminalSize(width, height);
+#endif
+
     // set current dir to executable dir so resource loading works as intended
     std::filesystem::path executable_path = std::filesystem::canonical(std::filesystem::path(argv[0])).parent_path();
     std::filesystem::current_path(executable_path);
@@ -75,7 +80,7 @@ int main(int argc, char* argv[])
 
 #elif defined(SYS_LINUX)
     // multiplatform frame drawers need to be given a terminal manager
-    std::shared_ptr<ITerminalManager<char>> linux_terminal_manager = std::make_shared<Linux::LinuxTerminalManager>(width, height);
+    std::shared_ptr<ITerminalManager<char>> linux_terminal_manager = std::make_shared<Linux::LinuxTerminalManager>();
 
     frame_drawers.emplace_back(std::make_shared<Multiplatform::VT24BitFrameDrawer<char>>(uint32_t_framebuffer, linux_terminal_manager));
     frame_drawers.emplace_back(std::make_shared<Multiplatform::VT8BitFrameDrawer<char>>(uint8_t_framebuffer, linux_terminal_manager));
