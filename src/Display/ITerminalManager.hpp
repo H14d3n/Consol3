@@ -42,6 +42,14 @@ namespace Display
             return 1.0f;
         }
 
+        /**
+         * Size of a single cell in pixels, returns false if unknown
+         */
+        virtual bool GetCellPixelSize(uint16_t& width, uint16_t& height) const
+        {
+            return false;
+        }
+
         virtual void WriteFrameBufferData(const T* data) = 0;
         /**
          * This call can contain ansi escape sequences, growing larger than the framebuffer size

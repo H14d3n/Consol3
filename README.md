@@ -32,7 +32,7 @@ Consol3_voxel will have a scene with ray marched voxels, along with a particle-l
 
 The project can be built for either Windows or Linux, on Linux only a few frame drawers are supported
 
-On Linux (including WSL and SSH) input is read from the terminal, the image always fills the terminal and follows it when resized. Unlike the Windows console, a terminal's font can't be shrunk to a few pixels, so by default every cell is split into 2 square pixels using the `▀` character (VT24BitHalfBlock frame drawer). For a sharper image make the terminal font smaller or zoom out (Ctrl and -), every cell is one more pixel, at the cost of FPS. Holding keys works best in terminals that report key releases: Windows Terminal, kitty, WezTerm, foot, Ghostty, Alacritty or iTerm2. Other terminals only report key presses, so held keys are estimated from the key repeat, and Shift, Ctrl and Capslock are only seen together with another key. Mouse buttons and mouse look (Capslock) work in any terminal with mouse reporting. When run locally with read access to `/dev/input` (root or the `input` group), the keyboard is read directly instead
+On Linux (including WSL and SSH) input is read from the terminal, the image always fills the terminal and follows it when resized. At startup the terminal is asked whether it can show images, if it supports the kitty graphics protocol or sixel graphics every frame is sent as an image at the resolution of the window (KittyGraphics or Sixel frame drawer). Otherwise, since a terminal's font can't be shrunk to a few pixels like the Windows console's, every cell is split into 2 square pixels using the `▀` character (VT24BitHalfBlock frame drawer), for a sharper image make the terminal font smaller or zoom out (Ctrl and -), every cell is one more pixel, at the cost of FPS. Holding keys works best in terminals that report key releases: Windows Terminal, kitty, WezTerm, foot, Ghostty, Alacritty or iTerm2. Other terminals only report key presses, so held keys are estimated from the key repeat, and Shift, Ctrl and Capslock are only seen together with another key. Mouse buttons and mouse look (Capslock) work in any terminal with mouse reporting. When run locally with read access to `/dev/input` (root or the `input` group), the keyboard is read directly instead
 
 
 ## Controls
@@ -181,6 +181,15 @@ Uses escape sequences to set the colors of each pixel, allowing for full 32 bit 
 Does not use any attribute change, thus the only color is white, the lightness of each pixel is controlled through the character in the cell  
 The current characters used are: " ·;%░≡¥▒▓█"  
 <img src="images/ascii.png" width="200" height="200">  
+
+###### Kitty Graphics Frame Drawer
+Sends every frame as a 24 bit image using the kitty graphics protocol, so the terminal shows real pixels instead of characters and the resolution only depends on the size of the window  
+The terminal scales the image over the window, on big or high dpi windows the framebuffer is scaled down to keep the FPS up  
+Supported by kitty, Ghostty, WezTerm and Konsole  
+
+###### Sixel Frame Drawer
+Same idea using sixel graphics, which are limited to a palette, every frame gets its own palette of up to 256 colors picked with median cut  
+Supported by Windows Terminal, WezTerm, foot, Konsole, mlterm and xterm (started with `-ti vt340`)  
 
 
 ### Shaders

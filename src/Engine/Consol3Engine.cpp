@@ -18,6 +18,7 @@ namespace Engine
     {
         if (input_manager->IsKeyHeld(Key::PAGE_UP) && !changed_frame_drawer)
         {
+            frame_drawers[cur_frame_drawer_index]->ReleaseFrameDrawer();
             cur_frame_drawer_index = (cur_frame_drawer_index + 1) % frame_drawers.size();
 
             game->SetFrameDrawer(frame_drawers[cur_frame_drawer_index]);
@@ -25,6 +26,7 @@ namespace Engine
         }
         if (input_manager->IsKeyHeld(Key::PAGE_DOWN) && !changed_frame_drawer)
         {
+            frame_drawers[cur_frame_drawer_index]->ReleaseFrameDrawer();
             cur_frame_drawer_index--;
             if (cur_frame_drawer_index < 0)
                 cur_frame_drawer_index = static_cast<int8_t>(frame_drawers.size() - 1);
@@ -62,6 +64,8 @@ namespace Engine
 
         start_time = std::chrono::high_resolution_clock::now();
         RunLoop();
+
+        frame_drawers[cur_frame_drawer_index]->ReleaseFrameDrawer();
     }
 
     void Consol3Engine::Stop()

@@ -23,6 +23,13 @@ namespace Display
         virtual void SetupFrameDrawer()                               = 0;
         virtual void SetPixel(uint16_t x, uint16_t y, RGBColor color) = 0;
 
+        /**
+         * Called when the frame drawer stops being used, removes anything it left on the display that the next one wouldn't overwrite
+         */
+        virtual void ReleaseFrameDrawer()
+        {
+        }
+
         virtual void ClearFrameBuffer() = 0;
         virtual void DisplayFrame()     = 0;
 

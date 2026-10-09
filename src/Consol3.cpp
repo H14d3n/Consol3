@@ -23,6 +23,8 @@
 #include "Engine/Input/LinuxInputManager.hpp"
 #endif
 
+#include "Display/Multiplatform/KittyGraphicsFrameDrawer.hpp"
+#include "Display/Multiplatform/SixelFrameDrawer.hpp"
 #include "Display/Multiplatform/TextOnlyFrameDrawer.hpp"
 #include "Display/Multiplatform/VT24BitHalfBlockFrameDrawer.hpp"
 #include "Display/Multiplatform/VT24BitFrameDrawer.hpp"
@@ -80,10 +82,18 @@ int main(int argc, char* argv[])
     input_manager = std::make_shared<Engine::Input::WindowsInputManager>();
 
 #elif defined(SYS_LINUX)
-    // multiplatform frame drawers need to be given a terminal manager
-    std::shared_ptr<ITerminalManager<char>> linux_terminal_manager = std::make_shared<Linux::LinuxTerminalManager>();
+    // multiplatform frame drawers need to be given a terminal manager, it asks the terminal what it supports, so it has to exist before the input manager
+    std::shared_ptr<Linux::LinuxTerminalManager> linux_terminal_manager = std::make_shared<Linux::LinuxTerminalManager>();
+    const Linux::TerminalGraphicsSupport& graphics_support             = linux_terminal_manager->GetGraphicsSupport();
 
-    // a terminal can't use a tiny font like the windows console does, splitting every cell in 2 pixels is the next best thing, so this is the default
+    // terminals that can show images get real pixels, at the resolution of the window
+    std::shared_ptr<FrameBuffer<uint32_t>> graphics_framebuffer = std::make_shared<FrameBuffer<uint32_t>>(width, height * 2);
+    if (graphics_support.kitty_graphics)
+        frame_drawers.emplace_back(std::make_shared<Multiplatform::KittyGraphicsFrameDrawer<char>>(graphics_framebuffer, linux_terminal_manager));
+    else if (graphics_support.HasUsableSixel())
+        frame_drawers.emplace_back(std::make_shared<Multiplatform::SixelFrameDrawer<char>>(graphics_framebuffer, linux_terminal_manager, graphics_support.GetSixelPaletteSize()));
+
+    // otherwise a terminal can't use a tiny font like the windows console does, splitting every cell in 2 pixels is the next best thing
     std::shared_ptr<FrameBuffer<uint32_t>> half_block_framebuffer = std::make_shared<FrameBuffer<uint32_t>>(width, height * 2);
     frame_drawers.emplace_back(std::make_shared<Multiplatform::VT24BitHalfBlockFrameDrawer<char>>(half_block_framebuffer, linux_terminal_manager));
     frame_drawers.emplace_back(std::make_shared<Multiplatform::VT24BitFrameDrawer<char>>(uint32_t_framebuffer, linux_terminal_manager));
